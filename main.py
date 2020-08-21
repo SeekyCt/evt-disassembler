@@ -3,8 +3,16 @@ from binread import BinaryReader
 from opcodes import opcodes, opcodesR
 from parsers import parsers
 
+def output(msg):
+    if config.toFile:
+        out.write(msg + '\n')
+    else:
+        print(msg)
+
 # ex. 80e4a688 for aa1_01_init_evt
 ptr = int(input("addr: 0x"), 16)
+if config.toFile:
+    out = open(config.outPath, 'w')
 f = BinaryReader.getStaticInstance()
 opc = 0
 while opc != opcodesR["end_script"]:
@@ -16,8 +24,8 @@ while opc != opcodesR["end_script"]:
     data = f.readatWA(ptr + 4, count)
 
     if config.showLineAddrs:
-        print(f"{hex(ptr)[2:]}: {opcodes[opc]} {parsers[opc](data)}")
+        output(f"{hex(ptr)[2:]}: {opcodes[opc]} {parsers[opc](data)}")
     else:
-        print(f"{opcodes[opc]} {parsers[opc](data)}")
+        output(f"{opcodes[opc]} {parsers[opc](data)}")
 
     ptr += 4 + (count * 4)

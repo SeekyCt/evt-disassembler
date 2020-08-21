@@ -1,9 +1,11 @@
+import config
+
 class BinaryReader:
     sInstance = None
     @staticmethod
     def getStaticInstance():
         if BinaryReader.sInstance is None:
-            BinaryReader.sInstance = BinaryReader("data/ram.raw")
+            BinaryReader.sInstance = BinaryReader(config.dumpPath)
         return BinaryReader.sInstance
 
     def __init__(self, path):
