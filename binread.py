@@ -1,28 +1,31 @@
 import config
 
 class BinaryReader:
-    sInstance = None
+    _sInstance = None
     @staticmethod
     def getStaticInstance():
-        if BinaryReader.sInstance is None:
-            BinaryReader.sInstance = BinaryReader(config.dumpPath)
-        return BinaryReader.sInstance
+        if BinaryReader._sInstance is None:
+            BinaryReader._sInstance = BinaryReader(config.dumpPath)
+        return BinaryReader._sInstance
+    @staticmethod
+    def destroyStaticInstance():
+        del BinaryReader._sInstance
 
     def __init__(self, path):
-        self.f = open(path, 'rb')
+        self._f = open(path, 'rb')
     
     def __del__(self):
-        self.f.close()
+        self._f.close()
 
     def readat(self, addr, size):
-        self.f.seek(addr - 0x80000000)
-        return self.f.read(size)
+        self._f.seek(addr - 0x80000000)
+        return self._f.read(size)
 
     def readatS(self, addr):
-        self.f.seek(addr - 0x80000000)
+        self._f.seek(addr - 0x80000000)
         strn = ""
         while True:
-            c = self.f.read(1)[0]
+            c = self._f.read(1)[0]
             if c == 0:
                 break
             strn += chr(c)
@@ -37,8 +40,8 @@ class BinaryReader:
     def readatW(self, addr):
         return self.readatI(addr, 4)
     
-    def readatWA(self, addr, n):
+    def readatWA(self, addr, length):
         ret = []
-        for i in range(0, n):
+        for i in range(0, length):
             ret.append(self.readatW(addr + (i * 4)))
         return ret

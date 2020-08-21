@@ -29,3 +29,6 @@ while opc != opcodesR["end_script"]:
         output(f"{opcodes[opc]} {parsers[opc](data)}")
 
     ptr += 4 + (count * 4)
+if config.toFile:
+    out.close
+BinaryReader.destroyStaticInstance()

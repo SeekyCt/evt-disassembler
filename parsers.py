@@ -5,6 +5,13 @@ from opcodes import opcodesR
 def setParser(opName, parser):
     parsers[opcodesR[opName]] = parser
 
+def stringOperand(addr):
+    f = BinaryReader.getStaticInstance()
+    if config.showStrAddrs:
+        return f'"{f.readatS(addr)}"_{hex(addr)[2:]}'
+    else:
+        return f'"{f.readatS(addr)}"'
+
 def parseDefault(data):
     if len(data) == 0:
         return ""
@@ -15,11 +22,7 @@ def parseDefault(data):
 
 def parseDebugPutMsg(data):
     addr = data[0]
-    f = BinaryReader.getStaticInstance()
-    if config.showStrAddrs:
-        return f'"{f.readatS(addr)}"_{hex(addr)[2:]}'
-    else:
-        return f'"{f.readatS(addr)}"'
+    return stringOperand(addr)
 
 parsers = {}
 for i in range(0, 119):
