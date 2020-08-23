@@ -4,6 +4,7 @@ from config import Config
 from binread import BinaryReader
 from opcodes import opcodesR
 
+# TODO: consider just removing this and always using strings directly
 class DataTypes(Enum):
     Address = "Address"
     Float = "Float"
@@ -49,6 +50,7 @@ def getType(val):
     return DataTypes.Immediate
 
 def normalOperand(val):
+    # TODO: try find a better way to go about this
     sval = struct.unpack(">i", int.to_bytes(val, 4, 'big'))[0]
     t = getType(sval)
     if t == DataTypes.Address:

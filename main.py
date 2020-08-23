@@ -10,12 +10,11 @@ def output(msg):
         print(msg)
 
 config = Config.getStaticInstance()
-
-# ex. 80e4a688 for aa1_01_init_evt
-ptr = int(input("addr: 0x"), 16)
+ptr = config.addr
 if config.toFile:
     out = open(config.outPath, 'w')
 f = BinaryReader.getStaticInstance()
+
 opc = 0
 while opc != opcodesR["end_script"]:
     # halfword    cmd
@@ -31,6 +30,7 @@ while opc != opcodesR["end_script"]:
         output(f"{opcodes[opc]} {parsers[opc](data)}")
 
     ptr += 4 + (count * 4)
+
 if config.toFile:
     out.close()
 BinaryReader.destroyStaticInstance()
