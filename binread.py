@@ -1,11 +1,11 @@
-import config
+from config import Config
 
 class BinaryReader:
     _sInstance = None
     @staticmethod
     def getStaticInstance():
         if BinaryReader._sInstance is None:
-            BinaryReader._sInstance = BinaryReader(config.dumpPath)
+            BinaryReader._sInstance = BinaryReader(Config.getStaticInstance().dumpPath)
         return BinaryReader._sInstance
     @staticmethod
     def destroyStaticInstance():

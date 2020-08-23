@@ -1,4 +1,4 @@
-import config
+from config import Config
 from binread import BinaryReader 
 from opcodes import opcodes, opcodesR
 from parsers import parsers
@@ -8,6 +8,8 @@ def output(msg):
         out.write(msg + '\n')
     else:
         print(msg)
+
+config = Config.getStaticInstance()
 
 # ex. 80e4a688 for aa1_01_init_evt
 ptr = int(input("addr: 0x"), 16)
@@ -30,5 +32,5 @@ while opc != opcodesR["end_script"]:
 
     ptr += 4 + (count * 4)
 if config.toFile:
-    out.close
+    out.close()
 BinaryReader.destroyStaticInstance()
