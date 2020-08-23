@@ -90,4 +90,4 @@ parsers = {}
 for i in range(0, 119):
     parsers[i] = parseDefault
 setParser("debug_put_msg", parseDebugPutMsg)
-#setParser("if_str_equal", parseIfStrEqual)
+setParser("if_str_equal", parseIfStrEqual)
