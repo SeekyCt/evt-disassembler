@@ -3,12 +3,6 @@ from binread import BinaryReader
 from opcodes import opcodes, opcodesR
 from parsers import parsers
 
-def output(msg):
-    if config.toFile:
-        out.write(msg + '\n')
-    else:
-        print(msg)
-
 config = Config.getStaticInstance()
 ptr = config.addr
 if config.toFile:
@@ -24,13 +18,17 @@ while opc != opcodesR["end_script"]:
     opc = f.readatH(ptr + 2)
     data = f.readatWA(ptr + 4, count)
 
+    msg = f"{opcodes[opc]} {parsers[opc](data)}"
     if config.showLineAddrs:
-        output(f"{hex(ptr)[2:]}: {opcodes[opc]} {parsers[opc](data)}")
+        msg = f"{hex(ptr)[2:]}: {msg}"
+    if config.toFile:
+        out.write(msg + '\n')
     else:
-        output(f"{opcodes[opc]} {parsers[opc](data)}")
+        print(msg)
 
     ptr += 4 + (count * 4)
 
 if config.toFile:
     out.close()
 BinaryReader.destroyStaticInstance()
+Config.destroyStaticInstance()

@@ -7,6 +7,9 @@ class Config:
         if Config._sInstance is None:
             Config._sInstance = Config()
         return Config._sInstance
+    @staticmethod
+    def destroyStaticInstance():
+        del Config._sInstance
 
     def __init__(self):
         parser = argparse.ArgumentParser()
@@ -15,6 +18,7 @@ class Config:
         parser.add_argument("--address", "-a")
         parser.add_argument("--straddrs", "-s", action="store_true")
         parser.add_argument("--lineaddrs", "-l", action="store_true")
+        parser.add_argument("--nopointer", '-n', action="store_true")
         args = parser.parse_args()
 
         # --ramfile path, -r path
@@ -54,3 +58,9 @@ class Config:
         #   enabled:  80e4a688: debug_put_msg "aa1_01_init_evt"
         #   disabled: debug_put_msg "aa1_01_init_evt"
         self.showLineAddrs = args.lineaddrs
+
+        # --nopointer, -n
+        # Prints 'ptr' instead of actual addresses, useful for comparing code from different builds
+        #   enabled:  user_func ptr, 1, 1, ptr, 1073741824
+        #   disabled: user_func 0x800eb72c, 1, 1, 0x80caa0d0, 1073741824
+        self.nopointer = args.nopointer

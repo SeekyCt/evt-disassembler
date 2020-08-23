@@ -4,22 +4,6 @@ from config import Config
 from binread import BinaryReader
 from opcodes import opcodesR
 
-# TODO: consider just removing this and always using strings directly
-class DataTypes(Enum):
-    Address = "Address"
-    Float = "Float"
-    UF = "UF"
-    UW = "UW"
-    GSW = "GSW"
-    LSW = "LSW"
-    GSWF = "GSWF"
-    LSWF = "LSWF"
-    GF = "GF"
-    LF = "LF"
-    GW = "GW"
-    LW = "LW"
-    Immediate = "Immediate"
-
 typeBases = {
     'Address': -270000000,
     'Float': -240000000,
@@ -39,27 +23,30 @@ def getType(val):
     for t in typeBases:
         if t == 'Address':
             if val <= typeBases[t]:
-                return DataTypes.Address
+                return t
         elif t == 'Float':
             if val < typeBases['UF']:
-                return DataTypes.Float
+                return t
         else:
             base = typeBases[t]
             if base <= val <= base + 10000000:
-                return DataTypes[t]
-    return DataTypes.Immediate
+                return t
+    return "Immediate"
 
 def normalOperand(val):
     # TODO: try find a better way to go about this
     sval = struct.unpack(">i", int.to_bytes(val, 4, 'big'))[0]
     t = getType(sval)
-    if t == DataTypes.Address:
-        return hex(val)
-    if t == DataTypes.Float:
+    if t == 'Address':
+        if Config.getStaticInstance().nopointer:
+            return "ptr"
+        else:
+            return hex(val)
+    if t == 'Float':
         return f"{(sval - typeBases['Float']) / 1024}f"
-    if t == DataTypes.Immediate:
+    if t == 'Immediate':
         return sval
-    return f"{t.value}({sval - typeBases[t.value]})"
+    return f"{t}({sval - typeBases[t]})"
 
 def stringOperand(addr):
     f = BinaryReader.getStaticInstance()
