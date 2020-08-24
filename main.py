@@ -11,20 +11,20 @@ f = BinaryReader.getStaticInstance()
 
 opc = 0
 while opc != opcodesR["end_script"]:
-    # halfword    cmd
     # halfword    cmdn
+    # halfword    cmd
     # word[cmdn]  data
     count = f.readatH(ptr)
     opc = f.readatH(ptr + 2)
     data = f.readatWA(ptr + 4, count)
 
-    msg = f"{opcodes[opc]} {parsers[opc](data)}"
+    line = f"{opcodes[opc]} {parsers[opc](data)}"
     if config.showLineAddrs:
-        msg = f"{hex(ptr)[2:]}: {msg}"
+        line = f"{hex(ptr)[2:]}: {line}"
     if config.toFile:
-        out.write(msg + '\n')
+        out.write(line + '\n')
     else:
-        print(msg)
+        print(line)
 
     ptr += 4 + (count * 4)
 

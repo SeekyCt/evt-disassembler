@@ -1,5 +1,4 @@
 import struct
-from enum import Enum, auto
 from config import Config
 from binread import BinaryReader
 from opcodes import opcodesR
@@ -43,17 +42,17 @@ def normalOperand(val):
         else:
             return hex(val)
     if t == 'Float':
-        return f"{(sval - typeBases['Float']) / 1024}f"
+        return f"{(sval - typeBases['Float']) / 1024}"
     if t == 'Immediate':
         return sval
     return f"{t}({sval - typeBases[t]})"
 
 def stringOperand(addr):
-    f = BinaryReader.getStaticInstance()
-    s = f'"{f.readatS(addr)}"'
-    if Config.getStaticInstance().showStrAddrs:
-       s += f"_{hex(addr)[2:]}"
-    return s
+    if Config.getStaticInstance().showStrings:
+        f = BinaryReader.getStaticInstance()
+        return f'"{f.readatS(addr)}"'
+    else:
+       return hex(addr)
 
 def parseDefault(data):
     if len(data) == 0:
