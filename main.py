@@ -1,7 +1,7 @@
 from config import Config
 from binread import BinaryReader 
 from opcodes import opcodes, opcodesR
-from parsers import parsers
+from parsers import parsers, getIndent, getUnindent
 
 config = Config.getStaticInstance()
 ptr = config.addr
@@ -10,6 +10,8 @@ if config.toFile:
 f = BinaryReader.getStaticInstance()
 
 opc = 0
+indent = 0
+indentNext = 0
 while opc != opcodesR["end_script"]:
     # halfword    cmdn
     # halfword    cmd
@@ -19,6 +21,10 @@ while opc != opcodesR["end_script"]:
     data = f.readatWA(ptr + 4, count)
 
     line = f"{opcodes[opc]} {parsers[opc](data)}"
+    indent += getUnindent(opc)
+    line = '    ' * indent + line
+    indent += getIndent(opc)
+
     if config.showLineAddrs:
         line = f"{hex(ptr)[2:]}: {line}"
     if config.toFile:
