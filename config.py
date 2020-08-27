@@ -26,7 +26,7 @@ class Config:
         if args.ramfile is not None:
             self.dumpPath = args.ramfile
         else:
-            self.dumpPath = "relf.raw"
+            self.dumpPath = "ram.raw"
         
         # --outfile path, -o path
         # Disassembly is stored to a text file instead of being printed to the console
