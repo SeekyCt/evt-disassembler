@@ -49,7 +49,7 @@ Disabled:
 ## Potential Update Plans
 - TTYD Support
 - More instruction-specific parsers (or maybe just removing the system entirely)
-- 
+- Indentation
 
 ## Credits
 This is heavily based off of the work by everyone involved in the creation of ttyd-asm
