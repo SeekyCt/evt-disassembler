@@ -1,6 +1,8 @@
 # Evt Script Disassembler
 A disassembler for binary evt scripts in a Super Paper Mario RAM dump (can support TTYD with minor edits)
 
+For most people this doesn't really offer any advantages over ttydasm, I mostly just made this for fun and also to make certain things easier to automate for myself
+
 ## Usage
 Either run main.py and it will prompt you to enter the script's memory address, or use the command line arguments (recommended)
 
@@ -48,7 +50,7 @@ Disabled:
 
 ## Potential Update Plans
 - TTYD Support
-- More instruction-specific parsers (or maybe just removing the system entirely)
+- More instruction-specific parsers (or maybe just removing the system entirely and doing some kind of string detection)
 
 ## Credits
 This is heavily based off of the work by everyone involved in the creation of ttyd-asm
