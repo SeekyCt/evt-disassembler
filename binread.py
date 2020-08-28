@@ -41,7 +41,4 @@ class BinaryReader:
         return self.readatI(addr, 4)
     
     def readatWA(self, addr, length):
-        ret = []
-        for i in range(0, length):
-            ret.append(self.readatW(addr + (i * 4)))
-        return ret
+        return [self.readatW(addr + (i * 4)) for i in range(0, length)]
