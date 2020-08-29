@@ -4,19 +4,21 @@ from binread import BinaryReader
 from opcodes import opcodes, opcodesR
 
 indents = ["do", "if_str_equal", "if_str_not_equal", "if_str_small", "if_str_large", "if_str_small_equal", "if_str_large_equal", "iff_equal", "iff_not_equal", "iff_small", "iff_large", "iff_small_equal", "iff_large_equal", "if_equal", "if_not_equal", "if_small", "if_large", "if_small_equal", "if_large_equal", "if_flag", "if_not_flag", "inline_evt", "inline_evt_id", "brother_evt", "brother_evt_id"]
+doubleIndents = ["switch", "switchi"]
+middleIndents = ["else", "case", "case_equal", "case_not_equal", "case_small", "case_large", "case_small_equal", "case_large_equal", "case_etc", "case_or", "case_and", "case_flag", "case_between"]
 unindents = ["end_if", "end_inline", "while", "end_brother"]
-middleindents = ["else", "case", "case_equal", "case_not_equal", "case_small", "case_large", "case_small_equal", "case_large_equal", "case_etc", "case_or", "case_and", "case_flag", "case_between"]
-indents += middleindents
-unindents += middleindents
+doubleUnindents = ["end_switch"]
+indents += middleIndents
+unindents += middleIndents
 
 def getUnindent(opc):
-    if opcodes[opc] == "end_switch":
+    if opcodes[opc] in doubleUnindents:
         return -2
     else:
         return -1 * (opcodes[opc] in unindents)
 
 def getIndent(opc):
-    if opcodes[opc] in ["switch", "switchi"]:
+    if opcodes[opc] in doubleIndents:
         return 2
     else:
         return opcodes[opc] in indents
@@ -54,7 +56,7 @@ def normalOperand(val):
     sval = struct.unpack(">i", int.to_bytes(val, 4, 'big'))[0]
     t = getType(sval)
     if t == 'Address':
-        if Config.getStaticInstance().nopointer:
+        if Config.getStaticInstance().noPointer:
             return "ptr"
         else:
             return hex(val)

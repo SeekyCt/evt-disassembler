@@ -63,4 +63,4 @@ class Config:
         # Prints 'ptr' instead of actual addresses, useful for comparing code from different builds
         #   enabled:  user_func ptr, 1, 1, ptr, 1073741824
         #   disabled: user_func 0x800eb72c, 1, 1, 0x80caa0d0, 1073741824
-        self.nopointer = args.nopointer
+        self.noPointer = args.nopointer
