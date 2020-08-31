@@ -71,7 +71,10 @@ def stringOperand(addr):
         f = BinaryReader.getStaticInstance()
         return f'"{f.readatS(addr)}"'
     else:
-       return hex(addr)
+        if Config.getStaticInstance().noPointer:
+            return "ptr"
+        else:
+           return hex(addr)
 
 def parseDefault(data):
     if len(data) == 0:

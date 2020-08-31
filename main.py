@@ -22,6 +22,8 @@ while opc != opcodesR["end_script"]:
 
     line = f"{opcodes[opc]} {parsers[opc](data)}"
     indent += getUnindent(opc)
+    if indent < 0:
+        indent = 0 # sometimes the game put too many end_ifs
     line = '    ' * indent + line
     indent += getIndent(opc)
 
