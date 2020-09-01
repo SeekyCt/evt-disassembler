@@ -1,16 +1,6 @@
 import argparse
 
 class Config:
-    _sInstance = None
-    @staticmethod
-    def getStaticInstance():
-        if Config._sInstance is None:
-            Config._sInstance = Config()
-        return Config._sInstance
-    @staticmethod
-    def destroyStaticInstance():
-        del Config._sInstance
-
     def __init__(self):
         parser = argparse.ArgumentParser()
         parser.add_argument("--ramfile", "-r")
@@ -75,3 +65,5 @@ class Config:
         #   enabled:  user_func ptr, 1, 1, ptr, 1073741824
         #   disabled: user_func 0x800eb72c, 1, 1, 0x80caa0d0, 1073741824
         self.noPointer = args.nopointer
+
+config = Config()
