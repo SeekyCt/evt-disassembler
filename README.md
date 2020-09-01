@@ -15,6 +15,17 @@ Path to the text file to store the result to (will print to console if not speci
 ### --address addr, -a addr
 Address of the script to disassemble, such as 80e4a688 for aa1_01_init_evt in PAL revision 0
 
+### --map path, -m path
+Replaces addresses with names from the symbol map file at the specified path where possible
+
+Enabled (using a map with only dol addresses):
+
+> user_func evt_mobj_save_blk, 0x80caa8a0, -200, 75, -275, 0x80d0dd60
+
+Disabled:
+
+> user_func 0x800fb118, 0x80caa8a0, -200, 75, -275, 0x80d0dd60
+
 ### --showstrings, -s
 Prints the contents of a string instead of its address for supported instructions (currently not supported by evt-assembler)
 

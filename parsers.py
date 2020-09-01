@@ -2,6 +2,7 @@ import struct
 from config import config
 from binread import ramReader
 from opcodes import opcodes, opcodesR
+from symbols import symbolMap
 
 indents = ["do", "if_str_equal", "if_str_not_equal", "if_str_small", "if_str_large", "if_str_small_equal", "if_str_large_equal", "iff_equal", "iff_not_equal", "iff_small", "iff_large", "iff_small_equal", "iff_large_equal", "if_equal", "if_not_equal", "if_small", "if_large", "if_small_equal", "if_large_equal", "if_flag", "if_not_flag", "inline_evt", "inline_evt_id", "brother_evt", "brother_evt_id"]
 doubleIndents = ["switch", "switchi"]
@@ -56,7 +57,9 @@ def normalOperand(val):
     sval = struct.unpack(">i", int.to_bytes(val, 4, 'big'))[0]
     t = getType(sval)
     if t == 'Address':
-        if config.noPointer:
+        if config.useMap and symbolMap.hasAddress(val):
+            return symbolMap.getName(val)
+        elif config.noPointer:
             return "ptr"
         else:
             return hex(val)
