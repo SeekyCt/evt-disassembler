@@ -22,6 +22,9 @@ class SymbolMap:
     def hasAddress(self, addr):
         return addr in self._addrToName
 
+    def hasName(self, name):
+        return name in self._nameToAddr
+
     def getName(self, addr):
         return self._addrToName[addr]
     
