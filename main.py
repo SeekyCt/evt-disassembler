@@ -1,9 +1,8 @@
-from config import Config
+from config import config
 from binread import BinaryReader 
 from opcodes import opcodes, opcodesR
 from parsers import parsers, getIndent, getUnindent
 
-config = Config.getStaticInstance()
 ptr = config.addr
 if config.toFile:
     out = open(config.outPath, 'w')
@@ -39,4 +38,3 @@ while opc != opcodesR["end_script"]:
 if config.toFile:
     out.close()
 BinaryReader.destroyStaticInstance()
-Config.destroyStaticInstance()

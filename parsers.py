@@ -1,5 +1,5 @@
 import struct
-from config import Config
+from config import config
 from binread import BinaryReader
 from opcodes import opcodes, opcodesR
 
@@ -56,7 +56,7 @@ def normalOperand(val):
     sval = struct.unpack(">i", int.to_bytes(val, 4, 'big'))[0]
     t = getType(sval)
     if t == 'Address':
-        if Config.getStaticInstance().noPointer:
+        if config.noPointer:
             return "ptr"
         else:
             return hex(val)
@@ -67,11 +67,11 @@ def normalOperand(val):
     return f"{t}({sval - typeBases[t]})"
 
 def stringOperand(addr):
-    if Config.getStaticInstance().showStrings:
+    if config.showStrings:
         f = BinaryReader.getStaticInstance()
         return f'"{f.readatS(addr)}"'
     else:
-        if Config.getStaticInstance().noPointer:
+        if config.noPointer:
             return "ptr"
         else:
            return hex(addr)
