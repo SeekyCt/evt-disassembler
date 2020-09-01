@@ -1,16 +1,6 @@
 from config import config
 
 class BinaryReader:
-    _sInstance = None
-    @staticmethod
-    def getStaticInstance():
-        if BinaryReader._sInstance is None:
-            BinaryReader._sInstance = BinaryReader(config.dumpPath)
-        return BinaryReader._sInstance
-    @staticmethod
-    def destroyStaticInstance():
-        del BinaryReader._sInstance
-
     def __init__(self, path):
         self._f = open(path, 'rb')
     
@@ -42,3 +32,5 @@ class BinaryReader:
     
     def readatWA(self, addr, length):
         return [self.readatW(addr + (i * 4)) for i in range(0, length)]
+
+ramReader = BinaryReader(config.dumpPath)

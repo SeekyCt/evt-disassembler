@@ -1,6 +1,6 @@
 import struct
 from config import config
-from binread import BinaryReader
+from binread import ramReader
 from opcodes import opcodes, opcodesR
 
 indents = ["do", "if_str_equal", "if_str_not_equal", "if_str_small", "if_str_large", "if_str_small_equal", "if_str_large_equal", "iff_equal", "iff_not_equal", "iff_small", "iff_large", "iff_small_equal", "iff_large_equal", "if_equal", "if_not_equal", "if_small", "if_large", "if_small_equal", "if_large_equal", "if_flag", "if_not_flag", "inline_evt", "inline_evt_id", "brother_evt", "brother_evt_id"]
@@ -68,8 +68,7 @@ def normalOperand(val):
 
 def stringOperand(addr):
     if config.showStrings:
-        f = BinaryReader.getStaticInstance()
-        return f'"{f.readatS(addr)}"'
+        return f'"{ramReader.readatS(addr)}"'
     else:
         if config.noPointer:
             return "ptr"
