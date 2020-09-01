@@ -16,6 +16,7 @@ class Config:
         parser.add_argument("--ramfile", "-r")
         parser.add_argument("--outfile", "-o")
         parser.add_argument("--address", "-a")
+        parser.add_argument("--map", "-m")
         parser.add_argument("--showstrings", "-s", action="store_true")
         parser.add_argument("--lineaddrs", "-l", action="store_true")
         parser.add_argument("--nopointer", '-n', action="store_true")
@@ -46,6 +47,16 @@ class Config:
             self.addr = int(args.address, 16)
         else:
             self.addr = int(input("addr: 0x"), 16)
+
+        # --map path, -m path
+        # Path to a symbol map, will be used 
+        # Ex. 80e4a688 for aa1_01_init_evt
+        if args.map is not None:
+            self.useMap = True
+            self.mapPath = args.map
+        else:
+            self.useMap = False
+            self.mapPath = None
 
         # --showstrings, -s
         # Prints the contents of a string instead of its address for supported instructions, currently can't re-assemble
