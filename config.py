@@ -10,6 +10,7 @@ class Config:
         parser.add_argument("--showstrings", "-s", action="store_true")
         parser.add_argument("--lineaddrs", "-l", action="store_true")
         parser.add_argument("--nopointer", '-n', action="store_true")
+        parser.add_argument("--ttyd", "-t", action="store_true")
         args = parser.parse_args()
 
         # --ramfile path, -r path
@@ -65,5 +66,9 @@ class Config:
         #   enabled:  user_func ptr, 1, 1, ptr, 1073741824
         #   disabled: user_func 0x800eb72c, 1, 1, 0x80caa0d0, 1073741824
         self.noPointer = args.nopointer
+
+        # --ttyd, -t
+        # Changes to TTYD values for opcodes and vriables
+        self.spm = not args.ttyd
 
 config = Config()

@@ -1,3 +1,5 @@
+from config import config
+
 opcodes = {
 	0x1: "end_script",
 	0x2: "end_evt",
@@ -119,6 +121,12 @@ opcodes = {
 	0x76: "debug_rem",
 	0x77: "debug_bp"
 }
+
+if not config.spm:
+	del opcodes[0x4a]
+	for i in range(0x4a, 0x77):
+		opcodes[i] = opcodes[i+1]
+	del opcodes[0x77]
 
 opcodesR = {}
 for opc in opcodes:

@@ -1,5 +1,5 @@
 # Evt Script Disassembler
-A disassembler for binary evt scripts in a Super Paper Mario RAM dump (can support TTYD with minor edits)
+A disassembler for binary evt scripts in a Super Paper Mario RAM dump
 
 For most people this doesn't really offer any advantages over ttydasm, I mostly just made this for fun and also to make certain things easier to automate for myself
 
@@ -59,8 +59,10 @@ Disabled:
 
 > user_func 0x800eb72c, 1, 1, 0x80caa0d0, 1073741824
 
+### --ttyd, -t
+Changes opcodes and variable bases to their TTYD values
+
 ## Potential Update Plans
-- TTYD Support
 - More instruction-specific parsers (or maybe just removing the system entirely and doing some kind of string detection)
 
 ## Credits
