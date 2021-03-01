@@ -81,7 +81,7 @@ opcodes = {
 	0x50: "or",
 	0x51: "ori",
 	0x52: "set_frame_from_msec",
-	0x53: "set_mesc_from_frame",
+	0x53: "set_msec_from_frame",
 	0x54: "set_ram",
 	0x55: "set_ramf",
 	0x56: "get_ram",
