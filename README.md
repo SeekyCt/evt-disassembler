@@ -66,5 +66,4 @@ Changes opcodes and variable bases to their TTYD values
 - More instruction-specific parsers (or maybe just removing the system entirely and doing some kind of string detection)
 
 ## Credits
-This is heavily based off of the work by everyone involved in the creation of ttyd-asm
-https://github.com/PistonMiner/ttyd-tools
+This is heavily based off of the work by everyone involved in the creation of [ttyd-asm](https://github.com/PistonMiner/ttyd-tools)
