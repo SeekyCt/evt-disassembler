@@ -13,13 +13,13 @@ class BinaryReader:
 
     def readatS(self, addr):
         self._f.seek(addr - 0x80000000)
-        strn = ""
+        strn = bytearray()
         while True:
             c = self._f.read(1)[0]
             if c == 0:
                 break
-            strn += chr(c)
-        return strn
+            strn.append(c)
+        return strn.decode("shift-jis")
 
     def readatI(self, addr, size):
         return int.from_bytes(self.readat(addr, size), 'big')

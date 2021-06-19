@@ -5,11 +5,10 @@ from parsers import parsers, getIndent, getUnindent
 
 ptr = config.addr
 if config.toFile:
-    out = open(config.outPath, 'w')
+    out = open(config.outPath, 'w', encoding="utf-8")
 
 opc = 0
 indent = 0
-indentNext = 0
 while opc != opcodesR["end_script"]:
     # halfword    cmdn
     # halfword    cmd
