@@ -1,7 +1,7 @@
 from config import config
 from binread import ramReader 
 from opcodes import opcodes, opcodesR
-from parsers import parsers, getIndent, getUnindent
+from parsers import parseOperands, getIndent, getUnindent
 
 ptr = config.addr
 if config.toFile:
@@ -17,7 +17,7 @@ while opc != opcodesR["end_script"]:
     opc = ramReader.readatH(ptr + 2)
     data = ramReader.readatWA(ptr + 4, count)
 
-    line = f"{opcodes[opc]} {parsers[opc](data)}"
+    line = f"{opcodes[opc]} {parseOperands(opc, data)}"
     indent += getUnindent(opc)
     if indent < 0:
         indent = 0 # sometimes the game put too many end_ifs

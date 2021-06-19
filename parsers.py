@@ -1,9 +1,11 @@
 import struct
+from enum import Enum
 from config import config
 from binread import ramReader
 from opcodes import opcodes, opcodesR
 from symbols import symbolMap
 
+# Indentation definitions
 indents = ["do", "if_str_equal", "if_str_not_equal", "if_str_small", "if_str_large", "if_str_small_equal", "if_str_large_equal", "iff_equal", "iff_not_equal", "iff_small", "iff_large", "iff_small_equal", "iff_large_equal", "if_equal", "if_not_equal", "if_small", "if_large", "if_small_equal", "if_large_equal", "if_flag", "if_not_flag", "inline_evt", "inline_evt_id", "brother_evt", "brother_evt_id"]
 doubleIndents = ["switch", "switchi"]
 middleIndents = ["else", "case", "case_equal", "case_not_equal", "case_small", "case_large", "case_small_equal", "case_large_equal", "case_etc", "case_or", "case_and", "case_flag", "case_between"]
@@ -12,18 +14,25 @@ doubleUnindents = ["end_switch"]
 indents += middleIndents
 unindents += middleIndents
 
-def getUnindent(opc):
-    if opcodes[opc] in doubleUnindents:
-        return -2
-    else:
-        return -1 * (opcodes[opc] in unindents)
+# Special disassembly for certain operands
+class OpType(Enum):
+    NORMAL = 0
+    STRING = 1
+    HEX = 2
+operandTypeDefs = {
+    "if_str_equal"       : [OpType.STRING, OpType.STRING],
+    "if_str_not_equal"   : [OpType.STRING, OpType.STRING],
+    "if_str_small"       : [OpType.STRING, OpType.STRING],
+    "if_str_large"       : [OpType.STRING, OpType.STRING],
+    "if_str_small_equal" : [OpType.STRING, OpType.STRING],
+    "if_str_large_equal" : [OpType.STRING, OpType.STRING],
+    "if_flag"            : [OpType.HEX,    OpType.HEX],
+    "if_not_flag"        : [OpType.HEX,    OpType.HEX],
+    "case_flag"          : [OpType.HEX],
+    "debug_put_msg"      : [OpType.STRING]
+}
 
-def getIndent(opc):
-    if opcodes[opc] in doubleIndents:
-        return 2
-    else:
-        return opcodes[opc] in indents
-
+# Data type definitions
 if config.spm:
     typeBases = {
         'Address': -270000000,
@@ -55,6 +64,25 @@ else:
         'LW': -30000000
     }
 
+# Opcode to indentation difference before instruction (-2, -1, 0)
+def getUnindent(opc):
+    if opcodes[opc] in doubleUnindents:
+        return -2
+    else:
+        return -1 * (opcodes[opc] in unindents)
+
+# Opcode to indentation difference after instruction (0, 1, 2)
+def getIndent(opc):
+    if opcodes[opc] in doubleIndents:
+        return 2
+    else:
+        return opcodes[opc] in indents
+
+# Uint to int
+def sign(val):
+    return struct.unpack(">i", int.to_bytes(val, 4, 'big'))[0]
+
+# Int to datatype
 def getType(val):
     for t in typeBases:
         if t == 'Address':
@@ -69,51 +97,71 @@ def getType(val):
                 return t
     return "Immediate"
 
+# Normal disassembler for operands
 def normalOperand(val):
-    sval = struct.unpack(">i", int.to_bytes(val, 4, 'big'))[0]
+    sval = sign(val)
     t = getType(sval)
     if t == 'Address':
-        if config.useMap and symbolMap.hasAddress(val):
-            return symbolMap.getName(val)
+        if sval == typeBases[t]:
+            return "nullptr"
+        else:
+            if config.useMap and symbolMap.hasAddress(val):
+                return symbolMap.getName(val)
+            elif config.noPointer:
+                return "ptr"
+            else:
+                return hex(val)
+    elif t == 'Float':
+        return f"{(sval - typeBases['Float']) / 1024}"
+    elif t == 'Immediate':
+        return sval
+    else:
+        return f"{t}({sval - typeBases[t]})"
+
+# Print a string address as its value
+def stringOperand(addr):
+    t = getType(sign(addr))
+    if t == 'Address':
+        if config.showStrings:
+            return f'"{ramReader.readatS(addr)}"'
         elif config.noPointer:
             return "ptr"
         else:
-            return hex(val)
-    if t == 'Float':
-        return f"{(sval - typeBases['Float']) / 1024}"
-    if t == 'Immediate':
-        return sval
-    return f"{t}({sval - typeBases[t]})"
-
-def stringOperand(addr):
-    if config.showStrings:
-        return f'"{ramReader.readatS(addr)}"'
+            return hex(addr)
     else:
-        if config.noPointer:
-            return "ptr"
-        else:
-           return hex(addr)
+        return normalOperand(addr)
 
-def parseDefault(data):
+# Print immediates in hex (for flags)
+def hexOperand(val):
+    t = getType(sign(val))
+    if t == 'Immediate':
+        return hex(val)
+    else:
+        return normalOperand(val)    
+
+# Disassemble an operand list for a specific instruction
+def parseOperands(opc, data):
     if len(data) == 0:
         return ""
+    
     s = ""
-    for d in data:
+
+    instr = opcodes[opc]
+    if instr in operandTypeDefs:
+        types = operandTypeDefs[opcodes[opc]]
+        for i, t in enumerate(types):
+            if i >= len(data):
+                break
+            if t == OpType.STRING:
+                s += f"{stringOperand(data[i])}, "
+            elif t == OpType.HEX:
+                s += f"{hexOperand(data[i])}, "
+            else:
+                s += f"{normalOperand(data[i])}, "
+    else:
+        i = -1
+
+    for d in data[i+1:]:
         s += f"{normalOperand(d)}, "
+
     return s[:-2]
-
-def parseDebugPutMsg(data):
-    addr = data[0]
-    return stringOperand(addr)
-
-def parseIfStrEqual(data):
-	return f"{normalOperand(data[0])}, {stringOperand(data[1])}"
-
-def setParser(opName, parser):
-    parsers[opcodesR[opName]] = parser
-
-parsers = {}
-for i in range(0, 119):
-    parsers[i] = parseDefault
-setParser("debug_put_msg", parseDebugPutMsg)
-setParser("if_str_equal", parseIfStrEqual)
