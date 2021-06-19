@@ -63,7 +63,7 @@ Disabled:
 Changes opcodes and variable bases to their TTYD values
 
 ## Potential Update Plans
-- More instruction-specific parsers (or maybe just removing the system entirely and doing some kind of string detection)
+- Storing operand types for specific user_funcs for better disassembly
 
 ## Credits
 This is heavily based off of the work by everyone involved in the creation of [ttyd-asm](https://github.com/PistonMiner/ttyd-tools)
