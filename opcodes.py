@@ -1,134 +1,57 @@
-from config import config
+# Opcode Namer: handles instruction names
 
-opcodes = {
-	0x1: "end_script",
-	0x2: "end_evt",
-	0x3: "lbl",
-	0x4: "goto",
-	0x5: "do",
-	0x6: "while",
-	0x7: "do_break",
-	0x8: "do_continue",
-	0x9: "wait_frm",
-	0xa: "wait_msec",
-	0xb: "halt",
-	0xc: "if_str_equal",
-	0xd: "if_str_not_equal",
-	0xe: "if_str_small",
-	0xf: "if_str_large",
-	0x10: "if_str_small_equal",
-	0x11: "if_str_large_equal",
-	0x12: "iff_equal",
-	0x13: "iff_not_equal",
-	0x14: "iff_small",
-	0x15: "iff_large",
-	0x16: "iff_small_equal",
-	0x17: "iff_large_equal",
-	0x18: "if_equal",
-	0x19: "if_not_equal",
-	0x1a: "if_small",
-	0x1b: "if_large",
-	0x1c: "if_small_equal",
-	0x1d: "if_large_equal",
-	0x1e: "if_flag",
-	0x1f: "if_not_flag",
-	0x20: "else",
-	0x21: "end_if",
-	0x22: "switch",
-	0x23: "switchi",
-	0x24: "case_equal",
-	0x25: "case_not_equal",
-	0x26: "case_small",
-	0x27: "case_large",
-	0x28: "case_small_equal",
-	0x29: "case_large_equal",
-	0x2a: "case_etc",
-	0x2b: "case_or",
-	0x2c: "case_and",
-	0x2d: "case_flag",
-	0x2e: "case_end",
-	0x2f: "case_between",
-	0x30: "switch_break",
-	0x31: "end_switch",
-	0x32: "set",
-	0x33: "seti",
-	0x34: "setf",
-	0x35: "add",
-	0x36: "sub",
-	0x37: "mul",
-	0x38: "div",
-	0x39: "mod",
-	0x3a: "addf",
-	0x3b: "subf",
-	0x3c: "mulf",
-	0x3d: "divf",
-	0x3e: "set_read",
-	0x3f: "read",
-	0x40: "read2",
-	0x41: "read3",
-	0x42: "read4",
-	0x43: "read_n",
-	0x44: "set_readf",
-	0x45: "readf",
-	0x46: "readf2",
-	0x47: "readf3",
-	0x48: "readf4",
-	0x49: "readf_n",
-	0x4a: "clamp_int",
-	0x4b: "set_user_wrk",
-	0x4c: "set_user_flg",
-	0x4d: "alloc_user_wrk",
-	0x4e: "and",
-	0x4f: "andi",
-	0x50: "or",
-	0x51: "ori",
-	0x52: "set_frame_from_msec",
-	0x53: "set_msec_from_frame",
-	0x54: "set_ram",
-	0x55: "set_ramf",
-	0x56: "get_ram",
-	0x57: "get_ramf",
-	0x58: "setr",
-	0x59: "setrf",
-	0x5a: "getr",
-	0x5b: "getrf",
-	0x5c: "user_func",
-	0x5d: "run_evt",
-	0x5e: "run_evt_id",
-	0x5f: "run_child_evt",
-	0x60: "delete_evt",
-	0x61: "restart_evt",
-	0x62: "set_pri",
-	0x63: "set_spd",
-	0x64: "set_type",
-	0x65: "stop_all",
-	0x66: "start_all",
-	0x67: "stop_other",
-	0x68: "start_other",
-	0x69: "stop_id",
-	0x6a: "start_id",
-	0x6b: "chk_evt",
-	0x6c: "inline_evt",
-	0x6d: "inline_evt_id",
-	0x6e: "end_inline",
-	0x6f: "brother_evt",
-	0x70: "brother_evt_id",
-	0x71: "end_brother",
-	0x72: "debug_put_msg",
-	0x73: "debug_msg_clear",
-	0x74: "debug_put_reg",
-	0x75: "debug_name",
-	0x76: "debug_rem",
-	0x77: "debug_bp"
-}
+class OpcodeNamer:
+    def __init__(self, spm: bool, cpp_macros: bool):
+        # Base list, starting from 1
+        opcodes = [
+            "end_script", "end_evt", "lbl", "goto", "do", "while", "do_break",
+            "do_continue", "wait_frm", "wait_msec", "halt", "if_str_equal",
+            "if_str_not_equal", "if_str_small", "if_str_large", "if_str_small_equal",
+            "if_str_large_equal", "iff_equal", "iff_not_equal", "iff_small",
+            "iff_large", "iff_small_equal", "iff_large_equal", "if_equal",
+            "if_not_equal", "if_small", "if_large", "if_small_equal", "if_large_equal",
+            "if_flag", "if_not_flag", "else", "end_if", "switch", "switchi",
+            "case_equal", "case_not_equal", "case_small", "case_large", "case_small_equal",
+            "case_large_equal", "case_etc", "case_or", "case_and", "case_flag",
+            "case_end", "case_between", "switch_break", "end_switch", "set", "seti",
+            "setf", "add", "sub", "mul", "div", "mod", "addf", "subf", "mulf", "divf",
+            "set_read", "read", "read2", "read3", "read4", "read_n", "set_readf",
+            "readf", "readf2", "readf3", "readf4", "readf_n", "clamp_int", "set_user_wrk",
+            "set_user_flg", "alloc_user_wrk", "and", "andi", "or", "ori", "set_frame_from_msec",
+            "set_msec_from_frame", "set_ram", "set_ramf", "get_ram", "get_ramf", "setr",
+            "setrf", "getr", "getrf", "user_func", "run_evt", "run_evt_id", "run_child_evt",
+            "delete_evt", "restart_evt", "set_pri", "set_spd", "set_type", "stop_all",
+            "start_all", "stop_other", "start_other", "stop_id", "start_id", "chk_evt",
+            "inline_evt", "inline_evt_id", "end_inline", "brother_evt", "brother_evt_id",
+            "end_brother", "debug_put_msg", "debug_msg_clear", "debug_put_reg",
+            "debug_name", "debug_rem", "debug_bp"
+        ]
 
-if not config.spm:
-	del opcodes[0x4a]
-	for i in range(0x4a, 0x77):
-		opcodes[i] = opcodes[i+1]
-	del opcodes[0x77]
+        # Remove SPM-only opcode for TTYD
+        if not spm:
+            opcodes.remove("clamp_int") 
 
-opcodesR = {}
-for opc in opcodes:
-	name = opcodes[opc]
-	opcodesR[name] = opc
+        # Build name and opcode dicts
+        self.names = {}
+        for i, name in enumerate(opcodes):
+            opc = i + 1
+            self.names[opc] = name
+        
+        # Store macro flag
+        self.cpp_macros = cpp_macros
+
+    # Gets the name for an opcode
+    def opc_to_name(self, opc: int) -> str:
+        return self.names[opc]
+
+    # Considers macro mode for a name
+    def name_to_printing_name(self, name: str) -> str:
+        if self.cpp_macros:
+            if name == "end_evt":
+                return "RETURN"
+            elif name == "end_script":
+                return "EVT_END"
+            else:
+                return name.upper()
+        else:
+            return name

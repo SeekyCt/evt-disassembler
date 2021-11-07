@@ -9,9 +9,6 @@ Either run main.py and it will prompt you to enter the script's memory address, 
 ### --ramfile path, -r path
 Path to the MEM1 RAM dump, defaults to 'ram.raw' in the current directory if not specified
 
-### --outfile path, -o path
-Path to the text file to store the result to (will print to console if not specified)
-
 ### --address addr, -a addr
 Address of the script to disassemble, such as 80e4a688 for aa1_01_init_evt in PAL revision 0
 
@@ -61,6 +58,9 @@ Disabled:
 
 ### --ttyd, -t
 Changes opcodes and variable bases to their TTYD values
+
+## --cpp, -c
+Changes the output format to use C/C++ macros (C++ implementation in ttyd-tools, C imlpementation coming soon in decomp)
 
 ## Potential Update Plans
 - Storing operand types for specific user_funcs for better disassembly

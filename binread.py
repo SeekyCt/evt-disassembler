@@ -1,36 +1,45 @@
-from config import config
+# Binary Reader: reads binary data from a RAM dump into various forms
+
+from typing import List
 
 class BinaryReader:
-    def __init__(self, path):
-        self._f = open(path, 'rb')
-    
-    def __del__(self):
-        self._f.close()
+    def __init__(self, path: str):
+        with open(path, 'rb') as f:
+            self.dat = f.read()
 
-    def readat(self, addr, size):
-        self._f.seek(addr - 0x80000000)
-        return self._f.read(size)
+    # Address to ram dump offset
+    def addr_to_offs(self, addr: int) -> int:
+        return addr - 0x80000000
 
-    def readatS(self, addr):
-        self._f.seek(addr - 0x80000000)
+    # Reads bytes at an address 
+    def read(self, addr: int, size: int) -> bytes:
+        offs = self.addr_to_offs(addr)
+        return self.dat[offs:offs+size]
+
+    # Reads a null-terminated SJIS string at an address
+    def read_str(self, addr: int) -> str:
+        offs = self.addr_to_offs(addr)
         strn = bytearray()
         while True:
-            c = self._f.read(1)[0]
+            c = self.dat[offs]
             if c == 0:
                 break
             strn.append(c)
+            offs += 1
         return strn.decode("shift-jis")
 
-    def readatI(self, addr, size):
-        return int.from_bytes(self.readat(addr, size), 'big')
+    # Reads an integer at an address
+    def read_int(self, addr: int, size: int) -> int:
+        return int.from_bytes(self.read(addr, size), "big")
 
-    def readatH(self, addr):
-        return self.readatI(addr, 2)
+    # Reads a halfword at an address
+    def read_half(self, addr: int) -> int:
+        return self.read_int(addr, 2)
 
-    def readatW(self, addr):
-        return self.readatI(addr, 4)
+    # Reads a word at an address
+    def read_word(self, addr: int) -> int:
+        return self.read_int(addr, 4)
     
-    def readatWA(self, addr, length):
-        return [self.readatW(addr + (i * 4)) for i in range(0, length)]
-
-ramReader = BinaryReader(config.dumpPath)
+    # Reads a word array at an address
+    def read_word_array(self, addr: int, length: int) -> List[int]:
+        return [self.read_word(addr + (i * 4)) for i in range(length)]
