@@ -1,0 +1,4 @@
+dump
+__pycache__
+*.raw
+*.map

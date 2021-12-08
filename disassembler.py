@@ -110,7 +110,7 @@ class Disassembler:
     def disassemble(self, addr: int) -> str:
         # Indent inside EVT_BEGIN block for macro mode
         if self.ctx.cpp_macros:
-            lines = ["EVT_BEGIN()"]
+            lines = [f"EVT_BEGIN({self.sym.get_name(addr)})"]
             min_indent = 1
             indent = 1
         else:
@@ -181,12 +181,12 @@ class Disassembler:
 
     # Prints an address
     def format_addr(self, addr: int) -> str:
-        if addr == self.type_bases["Address"]:
+        if self.sign(addr) == self.type_bases["Address"]:
             # ADDR(0) is used as a null pointer for some functions
             if self.ctx.cpp_macros:
-                return "nullptr"
-            else:
                 return "EVT_NULLPTR"
+            else:
+                return "nullptr"
         else:
             if self.ctx.no_pointer and not self.sym.has_name(addr):
                 # Hide bare addresses in noPointer mode
@@ -237,7 +237,7 @@ class Disassembler:
         # Add extra macro formatting if needed
         if self.ctx.cpp_macros and op_t != OpType.FUNC:
             val_t = self.get_type(self.sign(val))
-            if val_t == "Address":
+            if val_t == "Address" and self.sign(val) != self.type_bases["Address"]:
                 if op_t == OpType.STRING:
                     ret = f"PTR({ret})"
                 else:
