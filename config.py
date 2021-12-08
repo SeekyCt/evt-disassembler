@@ -13,6 +13,7 @@ class Config:
         parser.add_argument("--nopointer", '-n', action="store_true")
         parser.add_argument("--ttyd", "-t", action="store_true")
         parser.add_argument("--cpp", "-c", action="store_true")
+        parser.add_argument("--recursive", "-e", action="store_true")
         args = parser.parse_args()
 
         # --ramfile path, -r path
@@ -63,3 +64,7 @@ class Config:
         # --cpp, -c
         # Changes output format to C++ preprocessor macros
         self.cpp_macros = args.cpp
+
+        ## --recursive
+        # Recursively disassembles child scripts
+        self.recursive = args.recursive

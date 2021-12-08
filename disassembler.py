@@ -64,6 +64,21 @@ class OpType(Enum):
     HEX = 2
     FUNC = 3
 
+class ReferenceTracker:
+    def __init__(self):
+        self._d = {}
+
+    def notify_script(self, addr):
+        if addr not in self._d:
+            self._d[addr] = False
+        
+    def pop_script(self):
+        for key in self._d:
+            if not self._d[key]:
+                self._d[key] = True
+                return key
+        return None
+
 class Disassembler:
     def __init__(self, ctx: Config):
         self.ctx = ctx
@@ -71,6 +86,7 @@ class Disassembler:
         self.ram = BinaryReader(self.ctx.dump_path)
         self.sym = SymbolMap(self.ctx.map_path, self.ctx.cpp_macros)
         self.idt = Indenter(self.opc)
+        self.ref = ReferenceTracker()
 
         # Special disassembly for certain operands
         self.operand_type_defs = {
@@ -107,14 +123,17 @@ class Disassembler:
             self.type_bases["Float"] = -230000000
 
     # Disassembles a script at an address
-    def disassemble(self, addr: int) -> str:
+    def disassemble_one(self, addr: int) -> str:
         # Indent inside EVT_BEGIN block for macro mode
         if self.ctx.cpp_macros:
             lines = [f"EVT_BEGIN({self.sym.get_name(addr)})"]
             min_indent = 1
             indent = 1
         else:
-            lines = []
+            if self.ctx.recursive:
+                lines = [f"=== {self.sym.get_name(addr)} ==="]
+            else:
+                lines = []
             min_indent = 0
             indent = 0
 
@@ -158,6 +177,19 @@ class Disassembler:
             ptr += 4 + (count * 4)
         
         return '\n'.join(lines)
+    
+    # Disassembles a script at an address and optionally all referenced scripts
+    def disassemble(self, addr: int) -> str:
+        if self.ctx.recursive:
+            ret = []
+            while addr is not None:
+                txt = self.disassemble_one(addr)
+                ret.append(txt)
+                addr = self.ref.pop_script()
+            
+            return "\n\n\n".join(ret)
+        else:
+            return self.disassemble_one(addr)
 
     # Int to datatype
     def get_type(self, val: int) -> int:
@@ -255,6 +287,9 @@ class Disassembler:
 
         # Add operands
         if len(data) > 0:
+            if instr in {"run_evt", "run_evt_id", "run_child_evt"} and self.get_type(self.sign(data[0])) == "Address":
+                self.ref.notify_script(data[0])
+
             # Get operand type definitions
             if instr in self.operand_type_defs:
                 types = self.operand_type_defs[self.opc.opc_to_name(opc)][:len(data)]

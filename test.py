@@ -13,6 +13,7 @@ class DummyConfig:
     map_path: str
     dump_path: str
     spm: bool
+    recursive: bool
 
 def test_disasm(
     addr,
@@ -22,9 +23,10 @@ def test_disasm(
     cpp_macros = False,
     map_path = "R8PP01.map",
     dump_path = "ram.raw",
-    spm = True
+    spm = True,
+    recursive = False
 ):
-    ctx = DummyConfig(show_strings, show_line_addrs, no_pointer, cpp_macros, map_path, dump_path, spm)
+    ctx = DummyConfig(show_strings, show_line_addrs, no_pointer, cpp_macros, map_path, dump_path, spm, recursive)
     dis = Disassembler(ctx)
     return dis.disassemble(addr)
 
@@ -131,7 +133,7 @@ end_evt
 end_script"""
 
 # C++ macros
-assert test_disasm(0x80d2f8c8, show_strings=True, cpp_macros=True) == """EVT_BEGIN()
+assert test_disasm(0x80d2f8c8, show_strings=True, cpp_macros=True) == """EVT_BEGIN(unk_80d2f8c8)
     USER_FUNC(evt_sub_get_mapname, 0, LW(0))
     IF_STR_EQUAL(LW(0), PTR("mac_02"))
         RUN_CHILD_EVT(PTR(&unk_80d2f650))
@@ -149,13 +151,125 @@ assert test_disasm(0x80d2f8c8, show_strings=True, cpp_macros=True) == """EVT_BEG
 EVT_END()"""
 
 # C++ macros with floats
-assert test_disasm(0x80cf8e28, cpp_macros=True) == """EVT_BEGIN()
+assert test_disasm(0x80cf8e28, cpp_macros=True) == """EVT_BEGIN(unk_80cf8e28)
     MULF(LW(0), FLOAT(0.4443359375))
     USER_FUNC(evt_mapobj_rotate, PTR(&unk_80caa458), 0, LW(0), 0)
     MULF(LW(0), FLOAT(-1.0))
     USER_FUNC(evt_mapobj_rotate, PTR(&unk_80caa460), 0, LW(0), 0)
     RETURN()
 EVT_END()"""
+
+a = test_disasm(0x80d2f8c8, map_path=None, recursive=True); b = """=== 0x80d2f8c8 ===
+user_func 0x800d470c, 0, LW(0)
+if_str_equal LW(0), 0x80cb30dc
+    run_child_evt 0x80d2f650
+end_if
+if_str_equal LW(0), 0x80cb3350
+    run_child_evt 0x80d2f718
+end_if
+if_str_equal LW(0), 0x80cb30fc
+    run_child_evt 0x80d2f788
+end_if
+if_str_equal LW(0), 0x80cb3370
+    run_child_evt 0x80d2f858
+end_if
+end_evt
+end_script
+
+
+=== 0x80d2f650 ===
+if_equal GSWF(533), 0
+    user_func 0x800e3804, 0, 0x80cb3410
+    user_func 0x800edf24, 1, 1, 0x80cb341c, 1
+    user_func 0x800eac54, 0x80cb3428, 1, 0
+    user_func 0x800eac54, 0x80cb3438, 1, 0
+end_if
+if_equal GSWF(534), 0
+    user_func 0x800e3804, 0, 0x80cb3448
+    user_func 0x800edf24, 1, 1, 0x80cb3454, 1
+    user_func 0x800eac54, 0x80cb3460, 1, 0
+    user_func 0x800eac54, 0x80cb3470, 1, 0
+end_if
+end_evt
+end_script
+
+
+=== 0x80d2f718 ===
+if_equal GSWF(533), 0
+    run_child_evt 0x80d2f4a8
+    user_func 0x800e3804, 0, 0x80cb3410
+    user_func 0x800edf24, 1, 1, 0x80cb3454, 1
+    user_func 0x800eac54, 0x80cb3460, 1, 0
+    user_func 0x800eac54, 0x80cb3470, 1, 0
+end_if
+end_evt
+end_script
+
+
+=== 0x80d2f788 ===
+if_equal GSWF(534), 0
+    run_child_evt 0x80d2f4a8
+    user_func 0x800e3804, 0, 0x80cb3410
+    user_func 0x800edf24, 1, 1, 0x80cb341c, 1
+    user_func 0x800eac54, 0x80cb3428, 1, 0
+    user_func 0x800eac54, 0x80cb3438, 1, 0
+end_if
+if_equal GSWF(535), 0
+    user_func 0x800e3804, 0, 0x80cb3448
+    user_func 0x800edf24, 1, 1, 0x80cb3454, 1
+    user_func 0x800eac54, 0x80cb3460, 1, 0
+    user_func 0x800eac54, 0x80cb3470, 1, 0
+end_if
+end_evt
+end_script
+
+
+=== 0x80d2f858 ===
+if_equal GSWF(535), 0
+    run_child_evt 0x80d2f4a8
+    user_func 0x800e3804, 0, 0x80cb3410
+    user_func 0x800edf24, 1, 1, 0x80cb3454, 1
+    user_func 0x800eac54, 0x80cb3460, 1, 0
+    user_func 0x800eac54, 0x80cb3470, 1, 0
+end_if
+end_evt
+end_script
+
+
+=== 0x80d2f4a8 ===
+set LW(0), 0x80cb3400
+user_func 0x80102f5c, LW(0), 0x80cb3408, 0
+user_func 0x801059d0, LW(0), 1
+user_func 0x80104c94, LW(0), 14, 0x80d2eb40
+user_func 0x80103108, LW(0), 0, 1
+user_func 0x8010368c, LW(0), 1, 205520900
+user_func 0x801039b8, LW(0), 1, 32
+user_func 0x80103054, LW(0)
+user_func 0x80104694, LW(0), 1
+user_func 0x80108194, LW(0), 0
+user_func 0x80105708, LW(0), 1
+user_func 0x801055a4, LW(0)
+user_func 0x80104c94, LW(0), 9, 0x80d2eb88
+user_func 0x800d470c, 0, LW(1)
+if_str_equal LW(1), 0x80cb3350
+    set LW(2), -1100
+    set LW(3), 0
+    set LW(4), -1300
+end_if
+if_str_equal LW(1), 0x80cb30fc
+    set LW(2), -950
+    set LW(3), 0
+    set LW(4), -150
+end_if
+if_str_equal LW(1), 0x80cb3370
+    set LW(2), 1100
+    set LW(3), 0
+    set LW(4), -1300
+end_if
+user_func 0x800fe21c, LW(0), LW(2), LW(3), LW(4)
+end_evt
+end_script
+"""
 
 # TODO: add tests for
 #   TTYD

@@ -62,6 +62,9 @@ Changes opcodes and variable bases to their TTYD values
 ## --cpp, -c
 Changes the output format to use C/C++ macros (C++ implementation in ttyd-tools, C imlpementation coming soon in decomp)
 
+## --recursive, -e
+Disassembles other scripts referenced
+
 ## Potential Update Plans
 - Storing operand types for specific user_funcs for better disassembly
 
