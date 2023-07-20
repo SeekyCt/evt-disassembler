@@ -60,7 +60,7 @@ Disabled:
 Changes opcodes and variable bases to their TTYD values
 
 ## --cpp, -c
-Changes the output format to use C/C++ macros (C++ implementation in ttyd-tools, C imlpementation coming soon in decomp)
+Changes the output format to use C/C++ macros (implementations can be found in the `evt_cmd.h` headers of spm-headers)
 
 ## --recursive, -e
 Disassembles other scripts referenced
