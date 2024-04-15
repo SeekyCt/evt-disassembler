@@ -7,6 +7,7 @@ def main():
     dis = Disassembler(ctx)
     txt = dis.disassemble(ctx.addr)
     stdout.buffer.write(txt.encode("utf8")) # TODO: is there a better way to fix this?
+    x = input()
 
 if __name__ == "__main__":
     main()
