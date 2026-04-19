@@ -5,7 +5,7 @@ class SymbolMap:
         self.names = {}
         self.addresses = {}
         if path is not None:
-            with open(path) as mapfile:
+            with open(path, encoding='utf-8') as mapfile:
                 for line in mapfile.readlines():
                     # addr size addr2 section(?) name
                     splt = line.split()
