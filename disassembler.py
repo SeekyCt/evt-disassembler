@@ -187,7 +187,7 @@ class Disassembler:
                 ret.append(txt)
                 addr = self.ref.pop_script()
             
-            return "\n\n\n".join(ret)
+            return "\n\n".join(ret)
         else:
             return self.disassemble_one(addr)
 
